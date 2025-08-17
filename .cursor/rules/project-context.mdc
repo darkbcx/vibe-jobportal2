@@ -1,0 +1,111 @@
+# Vibe Job Portal - Project Context
+
+> **📖 Reading Order**: This file should be read FIRST before any other .mdc files
+> **🎯 Purpose**: Provides project overview, structure, and organizational principles
+
+## 🎯 Project Overview
+This is a modern job portal built with Next.js 15, TypeScript, Tailwind CSS, and Drizzle ORM. The project follows a monorepo structure with Yarn workspaces and emphasizes type safety through shared TypeScript interfaces.
+
+## 🚀 Always Reference
+When generating code, ALWAYS check:
+1. Relevant `.md` files in `specs/features/` folder for feature details
+2. Relevant `.md` files in `specs/pages/` folder for page layout specifications
+3. Relevant `.md` files in `specs/components/` folder for component specifications
+4. Follow the established project structure and naming conventions
+5. Use the specified tech stack and UI/UX guidelines
+
+## 🏗️ Project Structure
+
+### Monorepo Architecture
+This project uses Yarn workspaces to enable a scalable monorepo structure that can accommodate multiple related projects in the future.
+
+```
+vibe-jobportal/
+├── packages/
+│   ├── web/                           # Main Next.js 15 application
+│   │   ├── app/                       # Next.js App Router directory
+│   │   │   ├── (auth)/                # Route group: Authentication pages
+│   │   │       └── layout.tsx         # Layout for auth pages
+│   │   │   ├── (website)/             # Route group: Public website pages
+│   │   │       └── layout.tsx         # Layout for Public website pages
+│   │   │   ├── company/               # Protected routes: Company dashboard and management
+│   │   │       └── layout.tsx         # Layout for logged in company pages. Auth checking happens here
+│   │   │   ├── jobseeker/             # Protected routes: Job seeker dashboard and profile
+│   │   │       └── layout.tsx         # Layout for logged in jobseeker pages. Auth checking happens here
+│   │   │   └── api/                   # API routes for server-side functionality
+│   │   │   └── layout.tsx             # root layout with app-wide providers
+│   │   ├── components/                # Reusable React components
+│   │   │   ├── ui/                    # shadcn/ui base components
+│   │   │   ├── pages/                 # Page-specific components organized by route
+│   │   │   │   ├── auth/              # Authentication-related components
+│   │   │   │   ├── company/           # Company dashboard components
+│   │   │   │   ├── jobseeker/         # Job seeker dashboard components
+│   │   │   │   └── website/           # Public website components
+│   │   │   └── shared/                # Shared components used across multiple pages
+│   │   ├── lib/                       # Utility functions and configurations
+│   │   ├── hooks/                     # Custom React hooks
+│   │   ├── types/                     # TypeScript type definitions (web-specific)
+│   │   └── api/                       # Client-side API layer functions
+│   │
+│   ├── database/                      # Database schema and migration management
+│   │   ├── schema/                    # Drizzle ORM schema definitions
+│   │   ├── migrations/                # Auto-generated SQL migration files
+│   │   └── seed/                      # Database seeding scripts
+│   │
+│   ├── shared/                        # Shared utilities and types across packages
+│   │   ├── types/                     # Common TypeScript interfaces
+│   │   ├── utils/                     # Shared utility functions
+│   │   └── constants/                 # Application-wide constants
+│   │
+│   └── storage/                       # File storage management
+│       ├── uploads/                   # User uploaded files (resumes, company logos, etc.)
+│       └── temp/                      # Temporary file storage for processing
+│
+├── docs/                              # Project documentation
+├── scripts/                           # Build and deployment scripts
+├── tests/                             # End-to-end and integration tests
+│   ├── e2e/                           # End-to-end tests
+│   ├── integration/                   # API integration tests
+│   └── utils/                         # Test utilities and helpers
+│
+└── specs/                             # Project specifications (Markdown files)
+    ├── features/                      # Feature specifications
+    │   ├── feature-auth.md           # Authentication system specs
+    │   ├── feature-job-mgmt.md       # Job management specs
+    │   ├── feature-jobseeker.md      # Job seeker functionality specs
+    │   ├── feature-company.md        # Company/employer specs
+    │   └── feature-summaries.md      # Feature summaries
+    ├── pages/                         # Page layout specifications
+    │   └── home.md                   # Home page specifications
+    └── components/                    # Component specifications
+        ├── header.md                 # Header component specs
+        ├── footer.md                 # Footer component specs
+        ├── job-ad-item.md           # Job listing item component specs
+        └── job-ad-detail.md         # Job detail sheet/modal component specs
+```
+
+### Key Organizational Principles
+- **Route Groups**: Use Next.js route groups `(auth)`, `(website)` to organize related pages without affecting URL structure
+- **Role-Based Structure**: Separate app directories for different user roles (`company/`, `jobseeker/`)
+- **Component Hierarchy**: Organize components from generic (`ui/`) to specific (`pages/`) to shared (`shared/`)
+- **Component Reorganization**: As the application and pages evolve, shared components may be moved between folders within `components` folder for better organization. Remember to update all import statements in the pages that use these components to avoid errors.
+- **Separation of Concerns**: Each package has a clear, single responsibility
+- **Shared Dependencies**: Common utilities and types are centralized in the `shared` package
+- **Scalable Structure**: Easy to add new packages (mobile app, admin dashboard, etc.) in the future
+- **Consistent Naming**: Follow established naming conventions across all packages
+- **Clear Boundaries**: Each package can be developed and tested independently
+- **Type Safety**: TypeScript types are shared and consistently used across packages
+- **Type Management**: Convert database schema into TypeScript types and store them in `packages/shared/types` folder
+  - Use these types as the single source of truth for all type definitions
+  - Extend, pick, omit, or make partial from existing types rather than creating new ones
+
+## 🔧 Development Commands
+- `yarn dev` - Start development server
+- `yarn db:generate` - Generate database migrations
+- `yarn db:migrate` - Apply database migrations
+- `yarn db:seed` - Seed database with sample data
+- `yarn build` - Build for production
+description:
+globs:
+alwaysApply: false
+---

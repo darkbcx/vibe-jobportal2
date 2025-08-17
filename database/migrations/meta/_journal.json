@@ -1,0 +1,13 @@
+{
+  "version": "5",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1755460426704,
+      "tag": "0000_faithful_morg",
+      "breakpoints": true
+    }
+  ]
+}
