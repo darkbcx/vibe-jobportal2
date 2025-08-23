@@ -9,7 +9,7 @@ This file serves as a quick reference to all the detailed specifications that sh
 
 ## 🚀 Always Reference These Files First
 
-### Feature Specifications (`specs/features/`)
+### Feature Specifications (`.cursor/rules/specs-features/`)
 - **`feature-auth.md`** - Authentication system specifications
   - User registration and login flows
   - Password reset and account management
@@ -39,14 +39,14 @@ This file serves as a quick reference to all the detailed specifications that sh
   - User journey maps
   - Success metrics and KPIs
 
-### Page & Component Specifications (`specs/pages/`)
+### Page & Component Specifications (`.cursor/rules/specs-pages/`)
 - **`home.md`** - Home page layout and content specifications
   - Hero section requirements
   - Featured jobs display
   - Job categories section
   - Call-to-action elements
 
-### Component Specifications (`specs/components/`)
+### Component Specifications (`.cursor/rules/specs-components/`)
 - **`header.md`** - Header component specifications
   - Navigation structure
   - Search functionality
@@ -74,22 +74,22 @@ This file serves as a quick reference to all the detailed specifications that sh
 ## 🔍 How to Use These Specs
 
 ### When Implementing Features
-1. **Start with feature specs** - Understand the complete feature requirements
-2. **Check page specs** - See how the feature fits into page layouts
-3. **Review component specs** - Understand the UI component requirements
+1. **Start with feature specs** - Read `.cursor/rules/specs-features/[feature-name].md`
+2. **Check page specs** - See how the feature fits into page layouts in `.cursor/rules/specs-pages/`
+3. **Review component specs** - Understand the UI component requirements in `.cursor/rules/specs-components/`
 4. **Cross-reference with CONTEXT.md** - Ensure alignment with project structure
 
 ### When Creating Components
-1. **Read the specific component spec** - Get detailed requirements
-2. **Check related feature specs** - Understand the business logic
-3. **Review UI/UX guidelines** - Follow design principles
-4. **Verify folder structure** - Place in correct location
+1. **Read the specific component spec** - Get detailed requirements from `.cursor/rules/specs-components/[component-name].md`
+2. **Check related feature specs** - Understand the business logic from `.cursor/rules/specs-features/`
+3. **Review UI/UX guidelines** - Follow design principles from `ui-ux-guidelines.mdc`
+4. **Verify folder structure** - Place in correct location per `project-context.mdc`
 
 ### When Building Pages
-1. **Start with page spec** - Understand layout and content requirements
-2. **Check component specs** - See what components are needed
-3. **Review feature specs** - Understand the functionality
-4. **Follow routing structure** - Use correct Next.js patterns
+1. **Start with page spec** - Understand layout and content requirements from `.cursor/rules/specs-pages/[page-name].md`
+2. **Check component specs** - See what components are needed from `.cursor/rules/specs-components/`
+3. **Review feature specs** - Understand the functionality from `.cursor/rules/specs-features/`
+4. **Follow routing structure** - Use correct Next.js patterns per `coding-standards.mdc`
 
 ## 📋 Implementation Checklist
 
