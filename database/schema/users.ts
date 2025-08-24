@@ -5,7 +5,7 @@ export const users = sqliteTable('users', {
   id: text('id').primaryKey().$defaultFn(() => createId()),
   email: text('email').notNull().unique(),
   name: text('name').notNull(),
-  password: text('password').notNull(),
+  passwordHash: text('password_hash').notNull(),
   role: text('role', { enum: ['jobseeker', 'company', 'admin'] }).notNull().default('jobseeker'),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
