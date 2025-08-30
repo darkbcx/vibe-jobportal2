@@ -2,10 +2,17 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '../../lib/hooks/use-auth';
-import { LoginRequest, RegisterRequest } from '../../lib/types/auth';
+
+interface RegisterRequest {
+  email: string;
+  password: string;
+  passwordConfirmation: string;
+  name: string;
+  role: 'jobseeker' | 'company';
+}
 
 export const AuthExample: React.FC = () => {
-  const { user, isAuthenticated, isLoading, error, login, register, logout, clearError } = useAuth();
+  const { user, isAuthenticated, isLoading, login, register, logout } = useAuth();
   
   const [isLoginMode, setIsLoginMode] = useState(true);
   const [formData, setFormData] = useState({
@@ -19,15 +26,9 @@ export const AuthExample: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    clearError();
 
     if (isLoginMode) {
-      const loginData: LoginRequest = {
-        email: formData.email,
-        password: formData.password,
-      };
-      
-      const success = await login(loginData, formData.rememberMe);
+      const success = await login(formData.email, formData.password, formData.rememberMe);
       if (success) {
         // Reset form
         setFormData({
@@ -48,7 +49,7 @@ export const AuthExample: React.FC = () => {
         role: formData.role,
       };
       
-      const success = await register(registerData, formData.rememberMe);
+      const success = await register(registerData);
       if (success) {
         // Reset form
         setFormData({
@@ -120,12 +121,6 @@ export const AuthExample: React.FC = () => {
           Register
         </button>
       </div>
-
-      {error && (
-        <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-          {error}
-        </div>
-      )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {!isLoginMode && (

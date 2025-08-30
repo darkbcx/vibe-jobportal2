@@ -33,6 +33,7 @@ These `.mdc` files provide Cursor with comprehensive context about your project,
 - **Building UI components**: Read `00-ORGANIZATION.md` → `ui-ux-guidelines.mdc` → `coding-standards.mdc`
 - **Setting up architecture**: Read `00-ORGANIZATION.md` → `tech-stack-architecture.mdc` → `project-context.mdc`
 - **Implementing specs**: Read `00-ORGANIZATION.md` → `specs-reference.mdc` → relevant feature specs
+- **Working with authentication**: Read `00-ORGANIZATION.md` → `authjs-patterns.mdc` → `coding-standards.mdc`
 
 ## 🔄 Keeping Files in Sync
 
@@ -52,6 +53,7 @@ These `.mdc` files are automatically generated from `CONTEXT.md`. To update them
 ├── coding-standards.mdc        # Development patterns and conventions
 ├── ui-ux-guidelines.mdc        # Design principles and UX rules
 ├── tech-stack-architecture.mdc # Technical specifications
+├── authjs-patterns.mdc         # Auth.js implementation patterns and usage
 ├── specs-reference.mdc         # Implementation specifications
 ├── specs-features/             # Feature specifications
 │   ├── feature-auth.md         # Authentication system specs
@@ -83,6 +85,8 @@ These `.mdc` files are automatically generated from `CONTEXT.md`. To update them
 "Implement the authentication flow for job seekers"
 "Set up the company dashboard layout"
 "Create a new API endpoint for job search"
+"Implement protected routes using Auth.js middleware"
+"Create a login form component with NextAuth integration"
 ```
 
 ## 🔄 Updating Rules

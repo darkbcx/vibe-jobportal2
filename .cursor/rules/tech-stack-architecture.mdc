@@ -6,56 +6,111 @@
 ## 🛠️ Technology Stack
 
 ### Frontend
-| Area             | Technology                    | Purpose                                    |
-| ---------------- | ----------------------------- | ------------------------------------------ |
-| **Framework**    | Next.js 15                   | React framework with App Router            |
-| **Language**     | TypeScript                   | Type-safe JavaScript development           |
-| **Styling**      | Tailwind CSS                 | Utility-first CSS framework                |
-| **UI Components**| shadcn/ui                    | Pre-built, accessible UI components       |
-| **Icons**        | Lucide React                 | Consistent icon library                    |
-| **Animations**   | Framer Motion                | Smooth animations and micro-interactions   |
-| **Rich Text**    | Tiptap Editor                | Rich text editing capabilities             |
+
+| Area              | Technology    | Purpose                                  |
+| ----------------- | ------------- | ---------------------------------------- |
+| **Framework**     | Next.js 15    | React framework with App Router          |
+| **Language**      | TypeScript    | Type-safe JavaScript development         |
+| **Styling**       | Tailwind CSS  | Utility-first CSS framework              |
+| **UI Components** | shadcn/ui     | Pre-built, accessible UI components      |
+| **Icons**         | Lucide React  | Consistent icon library                  |
+| **Animations**    | Framer Motion | Smooth animations and micro-interactions |
+| **Rich Text**     | Tiptap Editor | Rich text editing capabilities           |
 
 ### Backend & Data
-| Area             | Technology                    | Purpose                                    |
-| ---------------- | ----------------------------- | ------------------------------------------ |
-| **API**          | Next.js API Routes           | Server-side API endpoints                  |
-| **Database**     | SQLite                       | Lightweight, file-based database          |
-| **ORM**          | Drizzle ORM                  | Type-safe database operations              |
-| **Authentication**| Custom database-based        | User authentication and authorization      |
+
+| Area               | Technology            | Purpose                               |
+| ------------------ | --------------------- | ------------------------------------- |
+| **API**            | Next.js API Routes    | Server-side API endpoints             |
+| **Database**       | SQLite                | Lightweight, file-based database      |
+| **ORM**            | Drizzle ORM           | Type-safe database operations         |
+| **Authentication** | Auth.js (NextAuth.js) | User authentication and authorization |
 
 ### State Management & Data Fetching
-| Area             | Technology                    | Purpose                                    |
-| ---------------- | ----------------------------- | ------------------------------------------ |
-| **State**        | Tanstack Query               | Server state management                    |
-| **Context**      | React Context Provider        | Client-side state management               |
-| **Caching**      | Tanstack Query               | Intelligent data caching and synchronization|
-| **Data Fetching**| Tanstack Query               | Optimized API calls with caching and synchronization|
+
+| Area              | Technology             | Purpose                                              |
+| ----------------- | ---------------------- | ---------------------------------------------------- |
+| **State**         | Tanstack Query         | Server state management                              |
+| **Context**       | React Context Provider | Client-side state management                         |
+| **Caching**       | Tanstack Query         | Intelligent data caching and synchronization         |
+| **Data Fetching** | Tanstack Query         | Optimized API calls with caching and synchronization |
 
 ### Development & Build Tools
-| Area             | Technology                    | Purpose                                    |
-| ---------------- | ----------------------------- | ------------------------------------------ |
-| **Package Manager**| Yarn Workspaces             | Monorepo dependency management             |
-| **Bundler**      | Next.js (Webpack)            | Application bundling and optimization      |
-| **Linting**      | ESLint                       | Code quality and consistency               |
-| **Formatting**   | Prettier                     | Code formatting and style consistency      |
-| **Testing**      | Jest + Testing Library       | Unit and integration testing               |
+
+| Area                | Technology             | Purpose                               |
+| ------------------- | ---------------------- | ------------------------------------- |
+| **Package Manager** | Yarn Workspaces        | Monorepo dependency management        |
+| **Bundler**         | Next.js (Webpack)      | Application bundling and optimization |
+| **Linting**         | ESLint                 | Code quality and consistency          |
+| **Formatting**      | Prettier               | Code formatting and style consistency |
+| **Testing**         | Jest + Testing Library | Unit and integration testing          |
 
 ## 🏗️ Architecture Overview
 
-### Monorepo Structure
+### Monorepo Architecture
+
 ```
-vibe-jobportal/
-├── packages/
-│   ├── web/                    # Next.js frontend application
-│   ├── database/               # Database schema and migrations
-│   ├── shared/                 # Common utilities and types
-│   └── storage/                # File storage management
+vibe-jobportal2/
+├── app/                               # Next.js App Router directory
+│   ├── (auth)/                        # Route group: Authentication pages
+│   │       └── layout.tsx             # Layout for auth pages
+│   ├── (website)/                     # Route group: Public website pages
+│   │       └── layout.tsx             # Layout for Public website pages
+│   ├── company/                       # Protected routes: Company dashboard and management
+│   │       └── layout.tsx             # Layout for logged in company pages. Auth checking happens here
+│   ├── jobseeker/                     # Protected routes: Job seeker dashboard and profile
+│   │       └── layout.tsx             # Layout for logged in jobseeker pages. Auth checking happens here
+│   ├── api/                           # API routes for server-side functionality
+│   │   └── auth/                      # Auth.js API routes
+│   │       ├── [...nextauth]/         # NextAuth.js main route
+│   │       └── register/              # Custom registration endpoint
+│   └── layout.tsx                     # root layout with app-wide providers
+├── components/                        # Reusable React components
+│   ├── ui/                            # shadcn/ui base components
+│   ├── pages/                         # Page-specific components organized by route
+│   │   ├── auth/                      # Authentication-related components
+│   │   ├── company/                   # Company dashboard components
+│   │   ├── jobseeker/                 # Job seeker dashboard components
+│   │   └── website/                   # Public website components
+│   └── shared/                        # Shared components used across multiple pages
+├── lib/                               # Utility functions and configurations
+│   ├── hooks/                         # Custom React hooks including useAuth
+│   └── db.ts                          # Database connection
+├── providers/                         # React context providers
+│   ├── auth-provider.tsx              # NextAuth SessionProvider wrapper
+│   ├── query-provider.tsx             # Tanstack Query provider
+│   └── index.tsx                      # Provider composition
+├── types/                             # TypeScript type definitions
+│   └── next-auth.d.ts                 # NextAuth type extensions
+├── database/                          # Database schema and migration management
+│   ├── schema/                        # Drizzle ORM schema definitions
+│   │   ├── users.ts                   # User schema with Auth.js compatibility
+│   │   ├── sessions.ts                # Auth.js session schema
+│   │   ├── accounts.ts                # Auth.js account schema for OAuth
+│   │   └── verificationTokens.ts      # Auth.js verification tokens
+│   ├── migrations/                    # Auto-generated SQL migration files
+│   └── seed/                          # Database seeding scripts
+├── middleware.ts                      # NextAuth middleware for route protection
+└── specs/                             # Project specifications (Markdown files)
+    ├── features/                      # Feature specifications
+    │   ├── feature-auth.md           # Authentication system specs
+    │   ├── feature-job-mgmt.md       # Job management specs
+    │   ├── feature-jobseeker.md      # Job seeker functionality specs
+    │   ├── feature-company.md        # Company/employer specs
+    │   └── feature-summaries.md      # Feature summaries
+    ├── pages/                         # Page layout specifications
+    │   └── home.md                   # Home page specifications
+    └── components/                    # Component specifications
+        ├── header.md                 # Header component specs
+        ├── footer.md                 # Footer component specs
+        ├── job-ad-item.md           # Job listing item component specs
+        └── job-ad-detail.md         # Job detail sheet/modal component specs
 ```
 
 ### Package Responsibilities
 
 #### `packages/web/` - Frontend Application
+
 - **Next.js 15** application with App Router
 - **React components** organized by functionality
 - **API routes** for server-side functionality
@@ -63,18 +118,21 @@ vibe-jobportal/
 - **Tailwind CSS** styling and theming
 
 #### `packages/database/` - Data Layer
+
 - **Drizzle ORM** schema definitions
 - **Database migrations** and versioning
 - **Seed data** for development and testing
 - **Type-safe** database operations
 
 #### `packages/shared/` - Common Utilities
+
 - **TypeScript interfaces** shared across packages
 - **Utility functions** for common operations
 - **Constants** and configuration values
 - **Validation schemas** and helpers
 
 #### `packages/storage/` - File Management
+
 - **File upload** handling and processing
 - **Storage organization** (uploads, temp, etc.)
 - **File validation** and security
@@ -83,12 +141,15 @@ vibe-jobportal/
 ## 🔐 Authentication & Security
 
 ### Authentication Strategy
-- **Custom implementation** using database
-- **Session-based** authentication
+
+- **Auth.js (NextAuth.js)** implementation for robust authentication
+- **Session-based** authentication with JWT strategy
 - **Role-based** access control (Job Seeker, Company, Admin)
-- **Secure password** hashing and storage
+- **Secure password** hashing and storage via bcrypt
+- **OAuth ready** for future social login integration
 
 ### Security Features
+
 - **CSRF protection** for forms
 - **Input validation** and sanitization
 - **SQL injection** prevention via Drizzle ORM
@@ -98,28 +159,36 @@ vibe-jobportal/
 ## 📊 Data Flow Architecture
 
 ### Frontend to Backend
+
 ```
 User Action → React Component → API Function → API Route → Database
 ```
 
 ### Data Fetching Pattern
+
 ```typescript
 // Client-side API layer
 const api = {
   jobs: {
-    list: () => fetch('/api/jobs').then(res => res.json()),
-    create: (data) => fetch('/api/jobs', { method: 'POST', body: JSON.stringify(data) })
-  }
-}
+    list: () => fetch("/api/jobs").then((res) => res.json()),
+    create: (data) =>
+      fetch("/api/jobs", { method: "POST", body: JSON.stringify(data) }),
+  },
+};
 
 // Component usage with Tanstack Query
-const { data: jobs, isLoading, error } = useQuery({
-  queryKey: ['jobs'],
-  queryFn: api.jobs.list
-})
+const {
+  data: jobs,
+  isLoading,
+  error,
+} = useQuery({
+  queryKey: ["jobs"],
+  queryFn: api.jobs.list,
+});
 ```
 
 ### State Management Strategy
+
 - **Server State**: Managed by Tanstack Query with intelligent caching
 - **Client State**: Managed by React Context for UI state
 - **Form State**: Managed by React Hook Form or similar
@@ -129,18 +198,21 @@ const { data: jobs, isLoading, error } = useQuery({
 ## 🚀 Performance & Optimization
 
 ### Rendering Strategy
+
 - **Server Components** by default for better performance
 - **Client Components** only when interactivity is needed
 - **Static Generation** where possible
 - **Incremental Static Regeneration** for dynamic content
 
 ### Bundle Optimization
+
 - **Code splitting** by route and component
 - **Tree shaking** for unused code elimination
 - **Image optimization** with Next.js Image component
 - **Font optimization** with proper loading strategies
 
 ### Database Optimization
+
 - **Indexed queries** for fast data retrieval
 - **Connection pooling** for efficient database connections
 - **Query optimization** with Drizzle ORM
@@ -149,6 +221,7 @@ const { data: jobs, isLoading, error } = useQuery({
 ## 🔧 Development Workflow
 
 ### Local Development
+
 ```bash
 # Start development server
 yarn dev
@@ -165,12 +238,14 @@ yarn lint           # Code linting
 ```
 
 ### Environment Configuration
+
 - **Environment variables** for configuration
 - **Development** vs **production** settings
 - **Database** connection management
 - **API keys** and external service configuration
 
 ### Testing Strategy
+
 - **Unit tests** for utility functions and components
 - **Integration tests** for API endpoints
 - **E2E tests** for critical user flows
@@ -179,12 +254,14 @@ yarn lint           # Code linting
 ## 📱 Responsive & Accessibility
 
 ### Responsive Design
+
 - **Mobile-first** approach
 - **Breakpoint system** with Tailwind CSS
 - **Touch-friendly** interactions
 - **Adaptive layouts** for different screen sizes
 
 ### Accessibility Features
+
 - **Semantic HTML** structure
 - **ARIA labels** and roles
 - **Keyboard navigation** support

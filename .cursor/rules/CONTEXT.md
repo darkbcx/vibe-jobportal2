@@ -1,11 +1,13 @@
 # Vibe Job Portal - AI Context Guide
 
 ## 🎯 Project Overview
+
 This is a modern job portal built with Next.js 15, TypeScript, Tailwind CSS, and Drizzle ORM. The project follows a monorepo structure with Yarn workspaces.
 
 ## 📚 Key Reference Files
 
 ### Feature Specifications
+
 - **`specs/features/feature-auth.md`** - Authentication system specifications
 - **`specs/features/feature-job-mgmt.md`** - Job management features
 - **`specs/features/feature-jobseeker.md`** - Job seeker functionality
@@ -13,6 +15,7 @@ This is a modern job portal built with Next.js 15, TypeScript, Tailwind CSS, and
 - **`specs/features/feature-summaries.md`** - Feature summaries and overview
 
 ### Page & Component Specifications
+
 - **`specs/pages/home.md`** - Home page layout and content specifications
 - **`specs/components/header.md`** - Header component specifications
 - **`specs/components/footer.md`** - Footer component specifications
@@ -20,7 +23,9 @@ This is a modern job portal built with Next.js 15, TypeScript, Tailwind CSS, and
 - **`specs/components/job-ad-detail.md`** - Job detail sheet/modal component specifications
 
 ## 🚀 Always Reference
+
 When generating code, ALWAYS check:
+
 1. Relevant `.md` files in `specs/features/` folder for feature details
 2. Relevant `.md` files in `specs/pages/` folder for page layout specifications
 3. Relevant `.md` files in `specs/components/` folder for component specifications
@@ -149,7 +154,7 @@ Build a Job Portal where users can register as a job seeker or a company. Priori
 | UI               | Next.js 15, Tailwind, Shadcn     |
 | State Management | Tanstack Query, Context Provider |
 | Backend          | API router, Drizzle ORM          |
-| Auth             | Custom using database            |
+| Auth             | Auth.js (NextAuth.js)            |
 | DB               | SQLite via Drizzle               |
 | Storage          | Local `storage` folder           |
 
@@ -169,6 +174,9 @@ vibe-jobportal2/
 │   ├── jobseeker/                     # Protected routes: Job seeker dashboard and profile
 │   │       └── layout.tsx             # Layout for logged in jobseeker pages. Auth checking happens here
 │   ├── api/                           # API routes for server-side functionality
+│   │   └── auth/                      # Auth.js API routes
+│   │       ├── [...nextauth]/         # NextAuth.js main route
+│   │       └── register/              # Custom registration endpoint
 │   └── layout.tsx                     # root layout with app-wide providers
 ├── components/                        # Reusable React components
 │   ├── ui/                            # shadcn/ui base components
@@ -179,24 +187,23 @@ vibe-jobportal2/
 │   │   └── website/                   # Public website components
 │   └── shared/                        # Shared components used across multiple pages
 ├── lib/                               # Utility functions and configurations
-├── hooks/                             # Custom React hooks
-├── types/                             # TypeScript type definitions (web-specific)
-├── api/                               # Client-side API layer functions
+│   ├── hooks/                         # Custom React hooks including useAuth
+│   └── db.ts                          # Database connection
+├── providers/                         # React context providers
+│   ├── auth-provider.tsx              # NextAuth SessionProvider wrapper
+│   ├── query-provider.tsx             # Tanstack Query provider
+│   └── index.tsx                      # Provider composition
+├── types/                             # TypeScript type definitions
+│   └── next-auth.d.ts                 # NextAuth type extensions
 ├── database/                          # Database schema and migration management
 │   ├── schema/                        # Drizzle ORM schema definitions
+│   │   ├── users.ts                   # User schema with Auth.js compatibility
+│   │   ├── sessions.ts                # Auth.js session schema
+│   │   ├── accounts.ts                # Auth.js account schema for OAuth
+│   │   └── verificationTokens.ts      # Auth.js verification tokens
 │   ├── migrations/                    # Auto-generated SQL migration files
 │   └── seed/                          # Database seeding scripts
-├── shared/                            # Shared utilities and types across packages
-│   ├── types/                         # Common TypeScript interfaces
-│   ├── utils/                         # Shared utility functions
-│   └── constants/                     # Application-wide constants
-├── storage/                           # File storage management
-│   ├── uploads/                       # User uploaded files (resumes, company logos, etc.)
-│   └── temp/                          # Temporary file storage for processing
-├── tests/                             # End-to-end and integration tests
-│   ├── e2e/                           # End-to-end tests
-│   ├── integration/                   # API integration tests
-│   └── utils/                         # Test utilities and helpers
+├── middleware.ts                      # NextAuth middleware for route protection
 └── specs/                             # Project specifications (Markdown files)
     ├── features/                      # Feature specifications
     │   ├── feature-auth.md           # Authentication system specs
@@ -226,8 +233,16 @@ vibe-jobportal2/
 - **Type Safety**: TypeScript types are shared and consistently used across packages
 
 ## 🔧 Development Commands
+
 - `yarn dev` - Start development server
 - `yarn db:generate` - Generate database migrations
 - `yarn db:migrate` - Apply database migrations
 - `yarn db:seed` - Seed database with sample data
-- `yarn build` - Build for production 
+- `yarn build` - Build for production
+
+### Auth.js Development
+
+- **Environment Setup**: Create `.env.local` with NextAuth configuration
+- **Database Migrations**: Run after schema changes for Auth.js compatibility
+- **Session Testing**: Use browser dev tools to inspect NextAuth sessions
+- **Protected Routes**: Test role-based access control in development

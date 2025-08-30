@@ -1,11 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '../../../../lib/db';
-import { users, sessions } from '../../../../database/schema';
-import { AuthUtils } from '../../../../lib/auth-utils';
-import { AuthResponse, RegisterRequest } from '../../../../lib/types/auth';
+import { users } from '../../../../database/schema';
+import bcrypt from 'bcryptjs';
 import { eq } from 'drizzle-orm';
 
-export async function POST(request: NextRequest): Promise<NextResponse<AuthResponse>> {
+interface RegisterRequest {
+  email: string;
+  password: string;
+  passwordConfirmation: string;
+  name: string;
+  role: 'jobseeker' | 'company';
+}
+
+export async function POST(request: NextRequest) {
   try {
     const body: RegisterRequest = await request.json();
     const { email, password, passwordConfirmation, name, role } = body;
@@ -14,14 +21,25 @@ export async function POST(request: NextRequest): Promise<NextResponse<AuthRespo
     const errors: string[] = [];
 
     // Email validation
-    if (!AuthUtils.isValidEmail(email)) {
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       errors.push('Please enter a valid email address');
     }
 
     // Password validation
-    const passwordValidation = AuthUtils.validatePassword(password);
-    if (!passwordValidation.isValid) {
-      errors.push(...passwordValidation.errors);
+    if (!password || password.length < 8) {
+      errors.push('Password must be at least 8 characters long');
+    }
+
+    if (!/[A-Z]/.test(password)) {
+      errors.push('Password must contain at least one uppercase letter');
+    }
+
+    if (!/[a-z]/.test(password)) {
+      errors.push('Password must contain at least one lowercase letter');
+    }
+
+    if (!/\d/.test(password)) {
+      errors.push('Password must contain at least one number');
     }
 
     // Password confirmation
@@ -59,7 +77,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<AuthRespo
     }
 
     // Hash password
-    const passwordHash = await AuthUtils.hashPassword(password);
+    const passwordHash = await bcrypt.hash(password, 12);
 
     // Create user
     const [newUser] = await db.insert(users).values({
@@ -69,30 +87,11 @@ export async function POST(request: NextRequest): Promise<NextResponse<AuthRespo
       role,
     }).returning();
 
-    // Create session
-    const sessionToken = AuthUtils.generateSessionToken();
-    const expiredAt = AuthUtils.getSessionExpiry();
-    const ipAddress = AuthUtils.getClientIP(request);
-    const userAgent = AuthUtils.getUserAgent(request);
-
-    await db.insert(sessions).values({
-      sessionToken,
-      userId: newUser.id,
-      email: newUser.email,
-      expiredAt,
-      ipAddress,
-      userAgent,
-    });
-
-    // Generate JWT
-    const jwt = AuthUtils.generateJWT(newUser, sessionToken);
-
     // Return success response
-    const response: AuthResponse = {
+    return NextResponse.json({
       success: true,
       message: 'User registered successfully',
       data: {
-        jwt,
         user: {
           id: newUser.id,
           email: newUser.email,
@@ -102,9 +101,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<AuthRespo
           updatedAt: newUser.updatedAt,
         },
       },
-    };
-
-    return NextResponse.json(response, { status: 201 });
+    }, { status: 201 });
 
   } catch (error) {
     console.error('Registration error:', error);

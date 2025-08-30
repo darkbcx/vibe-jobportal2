@@ -3,6 +3,45 @@
 > **📖 Reading Order**: Read this file SECOND, after project-context.mdc
 > **🎯 Purpose**: Development patterns, naming conventions, and architecture guidelines
 
+## 🔐 Authentication & Auth.js Patterns
+
+### Auth.js Implementation
+- **NextAuth.js** is the primary authentication solution
+- **SessionProvider** wraps the application for auth context
+- **useSession** hook provides authentication state
+- **signIn/signOut** functions handle authentication flows
+- **Protected routes** use middleware with role-based access control
+
+### Authentication Hooks
+- **useAuth** custom hook provides simplified auth interface
+- **Server-side auth** uses `getServerSession()` for protected layouts
+- **Client-side auth** uses `useSession()` for interactive components
+- **Role-based routing** automatically redirects unauthorized users
+
+### Protected Route Patterns
+```typescript
+// Server component layout protection
+export default async function ProtectedLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const session = await getServerSession();
+  
+  if (!session || session.user.role !== 'company') {
+    redirect('/auth/signin');
+  }
+  
+  return <div>{children}</div>;
+}
+```
+
+### Auth.js Integration
+- **Credentials provider** for email/password authentication
+- **JWT strategy** for session management
+- **Custom callbacks** for role-based access control
+- **Middleware protection** for route-level security
+
 ## 🎯 Coding Patterns
 
 ### Next.js App Router Structure
