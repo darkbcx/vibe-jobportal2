@@ -1,3 +1,9 @@
+---
+description: "Vibe Job Portal - Project Context and Structure"
+globs: ["**/*"]
+alwaysApply: true
+---
+
 # Vibe Job Portal - Project Context
 
 > **📖 Reading Order**: This file should be read FIRST before any other .mdc files
@@ -110,7 +116,3 @@ vibe-jobportal/
 - `yarn db:migrate` - Apply database migrations
 - `yarn db:seed` - Seed database with sample data
 - `yarn build` - Build for production
-description:
-globs:
-alwaysApply: false
----

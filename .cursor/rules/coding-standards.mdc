@@ -1,3 +1,234 @@
+---
+alwaysApply: true
+---
+
+# Coding Standards & Patterns
+
+> **📖 Reading Order**: Read this file SECOND, after project-context.mdc
+> **🎯 Purpose**: Development patterns, naming conventions, and architecture guidelines
+
+## 🔐 Authentication & Auth.js Patterns
+
+### Auth.js Implementation
+- **NextAuth.js** is the primary authentication solution
+- **SessionProvider** wraps the application for auth context
+- **useSession** hook provides authentication state
+- **signIn/signOut** functions handle authentication flows
+- **Protected routes** use middleware with role-based access control
+
+### Authentication Hooks
+- **useAuth** custom hook provides simplified auth interface
+- **Server-side auth** uses `getServerSession()` for protected layouts
+- **Client-side auth** uses `useSession()` for interactive components
+- **Role-based routing** automatically redirects unauthorized users
+
+### Protected Route Patterns
+```typescript
+// Server component layout protection
+export default async function ProtectedLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const session = await getServerSession();
+  
+  if (!session || session.user.role !== 'company') {
+    redirect('/auth/signin');
+  }
+  
+  return <div>{children}</div>;
+}
+```
+
+### Auth.js Integration
+- **Credentials provider** for email/password authentication
+- **JWT strategy** for session management
+- **Custom callbacks** for role-based access control
+- **Middleware protection** for route-level security
+
+## 🎯 Coding Patterns
+
+### Next.js App Router Structure
+- Use `app/` dir with server components for pages, client components for interactions
+- **For most pages, implement `page.tsx` as a server component to enable easy page metadata configuration and initial data fetching. Use client components for interactive elements and data-heavy operations that require client-side state management.**
+- **For client components, use Tanstack Query for state management**
+- Put shared components in `components` folder
+- Put page specific components in `components/pages/[page-name]` folder
+
+### Component Organization
+- **`ui/`** - shadcn/ui base components (generic, reusable)
+- **`pages/[route]/`** - Page-specific components organized by route
+  - `auth/` - Authentication-related components
+  - `company/` - Company dashboard components
+  - `jobseeker/` - Job seeker dashboard components
+  - `website/` - Public website components
+- **`shared/`** - Shared components used across multiple pages
+- **Component Reorganization**: As the application and pages evolve, shared components may be moved between folders within `components` folder for better organization. Remember to update all import statements in the pages that use these components to avoid errors.
+
+### Naming Conventions
+- **PascalCase** for Class names
+- **camelCase** for function and variable names
+- **kebab-case** for table and field names
+- **snake_case** for database columns (if not using kebab-case)
+
+## 🏗️ Architecture Principles
+
+### Frontend-Backend Decoupling
+- Create client-side API layer as functions and let these functions handle the API calls
+- Frontend must call these functions, not the API endpoints directly
+- Keep code as modular and maintainable as possible
+
+### Type Safety
+- Use TypeScript consistently across all packages
+- Share common types through the `shared` package
+- Maintain type safety between frontend and backend
+- **Type Management**: Convert database schema into TypeScript types and store them in `packages/shared/types` folder
+  - Use these types as the single source of truth for all type definitions
+  - Extend, pick, omit, or make partial from existing types rather than creating new ones
+  - Maintain consistency across all packages by importing from shared types
+
+### Component Design
+- Keep components focused and single-purpose
+- Use composition over inheritance
+- **Prefer server components for pages and data fetching, client components only for interactivity**
+- **Client components should use Tanstack Query for state management**
+- Implement proper error boundaries and loading states
+
+### Type Management & Consistency
+- **Shared Types**: All TypeScript interfaces should be defined in `packages/shared/types`
+- **Type Reuse**: Extend, pick, omit, or make partial from existing types rather than creating new ones
+- **Database Schema**: Convert Drizzle schema into TypeScript types for consistency
+- **Import Strategy**: Always import types from shared package, never define duplicates
+- **Type Safety**: Maintain strict type checking across all packages
+
+## 📁 File Organization
+
+### Component Files
+```
+components/
+├── ui/                    # Base UI components (shadcn/ui)
+├── pages/                 # Page-specific components
+│   ├── auth/             # Authentication components
+│   ├── company/          # Company dashboard components
+│   ├── jobseeker/        # Job seeker dashboard components
+│   └── website/          # Public website components
+└── shared/               # Shared across multiple pages
+```
+
+### Route Structure
+```
+app/
+├── (auth)/               # Route group for authentication
+├── (website)/            # Route group for public pages
+├── company/              # Protected company routes
+├── jobseeker/            # Protected jobseeker routes
+└── api/                  # API routes
+```
+
+## 🔧 Development Guidelines
+
+### Code Quality
+- Keep code as modular and maintainable as possible
+- Use consistent formatting and linting rules
+- Implement proper error handling
+- Write meaningful comments for complex logic
+
+### Performance
+- **Prefer SSR or statically streamed content for pages**
+- **Use server components for initial data fetching and metadata**
+- **Use client components only when interactivity is required**
+- **Client components must use Tanstack Query for state management**
+- Implement proper loading states
+- Use React.memo and useMemo when appropriate
+- Optimize bundle size with proper code splitting
+
+### Testing
+- Write tests for critical business logic
+- Implement proper error boundaries
+- Test component interactions and user flows
+- Maintain good test coverage
+
+## 🗄️ Database & Schema Standards
+
+### Database Naming
+- **Tables**: Use kebab-case (e.g., `job_postings`, `company_profiles`)
+- **Fields**: Use kebab-case (e.g., `created_at`, `user_id`)
+- **Foreign Keys**: Use `entity_id` pattern (e.g., `company_id`, `job_seeker_id`)
+
+### Schema Consistency
+- **Timestamps**: Always include `created_at` and `updated_at` fields
+- **IDs**: Use CUID2 for primary keys (`createId()` from `@paralleldrive/cuid2`)
+- **References**: Proper foreign key relationships with cascade options
+- **Enums**: Use string enums for status and type fields
+
+### Type Generation
+- **Drizzle Schema**: Define schema in `packages/database/schema/`
+- **Shared Types**: Generate and export types from `packages/shared/types/`
+- **Type Safety**: Ensure database schema matches TypeScript types exactly
+
+## 🎨 UI/UX Standards
+
+### Design System
+- **Tailwind CSS**: Use Tailwind classes for consistent styling
+- **shadcn/ui**: Use shadcn/ui components as base building blocks
+- **Theme Tokens**: Use custom theme tokens for colors and spacing
+- **Responsive Design**: Mobile-first approach with proper breakpoints
+
+### Component Patterns
+- **Server Components**: For data fetching, metadata, and static content
+- **Client Components**: For interactivity, state management, and user input
+- **State Management**: Client components must use Tanstack Query for state management
+- **Composition**: Build complex UIs from simple, reusable components
+- **Accessibility**: WCAG 2.1 AA compliance for all components
+
+### Animation & Interactions
+- **Framer Motion**: Use for major component entries and micro-interactions
+- **Performance**: Ensure 60fps animations and smooth transitions
+- **User Feedback**: Provide clear visual feedback for all user actions
+- **Loading States**: Implement proper loading and error states
+
+## 🔄 State Management & Data Fetching
+
+### Tanstack Query Requirements
+- **Mandatory Usage**: All client components must use Tanstack Query for state management
+- **No Alternatives**: Do not use other state management libraries for server data
+- **Consistent Pattern**: Apply Tanstack Query across all interactive components
+
+### Tanstack Query Organization
+- **For Tanstack Query usage, organize queries by category in dedicated files within a specific folder structure for better maintainability and organization**
+- **Query Categories**: Group related queries by domain (e.g., `queries/auth.ts`, `queries/jobs.ts`, `queries/companies.ts`)
+- **File Structure**: Maintain consistent organization within the queries folder
+- **Query Keys**: Use consistent naming patterns for query keys across categories
+- **Error Handling**: Implement consistent error handling patterns for all queries
+
+### Query Management Patterns
+- **Custom Hooks**: Create custom hooks for complex query logic
+- **Query Invalidation**: Implement proper query invalidation strategies
+- **Optimistic Updates**: Use optimistic updates for better user experience
+- **Background Refetching**: Configure appropriate background refetching intervals
+
+### State Organization
+- **Local State**: Use React useState for component-specific state
+- **Global State**: Use Context or Zustand for application-wide state
+- **Server State**: Use Tanstack Query for server data management (REQUIRED for client components)
+- **Form State**: Use React Hook Form for complex form management
+
+## 🚫 Anti-Patterns to Avoid
+
+### State Management
+- **Do NOT use**: Redux, MobX, or other state management libraries for server data
+- **Do NOT use**: Direct API calls in client components without Tanstack Query
+- **Do NOT use**: Local state for server data that should be cached
+
+### Component Architecture
+- **Do NOT use**: Client components for static content or data fetching
+- **Do NOT use**: Server components for interactive elements
+- **Do NOT use**: Mixed patterns within the same component
+
+### Data Fetching
+- **Do NOT use**: useEffect for data fetching in client components
+- **Do NOT use**: Manual fetch calls without proper error handling
+- **Do NOT use**: Inconsistent data fetching patterns across components
 # Coding Standards & Patterns
 
 > **📖 Reading Order**: Read this file SECOND, after project-context.mdc

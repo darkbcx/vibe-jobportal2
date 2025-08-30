@@ -1,3 +1,7 @@
+---
+alwaysApply: true
+---
+
 # UI/UX Guidelines & Design Principles
 
 > **📖 Reading Order**: Read this file THIRD, after coding-standards.mdc
@@ -137,7 +141,142 @@ Build a Job Portal where users can register as a job seeker or a company. Priori
 - **Seamless switching** between languages
 - **RTL** language support where needed
 - **Localized** date, number, and currency formats
-description:
-globs:
-alwaysApply: false
----
+# UI/UX Guidelines & Design Principles
+
+> **📖 Reading Order**: Read this file THIRD, after coding-standards.mdc
+> **🎯 Purpose**: Design principles, user experience rules, and visual guidelines
+
+## 🎨 Project Vibe
+
+### Goal
+Build a Job Portal where users can register as a job seeker or a company. Priority is speed, simplicity, and modern, minimal UI.
+
+### Vibe Definition
+
+| Element   | Description                                                                                                                  |
+| --------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| Visual    | Whitespace-heavy, rounded corners, pastel or soft accent colors. Feels clean and airy.                                       |
+| UX        | Minimal friction. Avoid modal traps. Use sheet for any sub-page forms or information. Everything should feel one-click-away. |
+| Tone      | Friendly, creator-focused, informal but clear. Encouraging and supportive.                                                   |
+| Tech Feel | Fast, responsive, almost "magically light". Prefers SSR or statically streamed content. Smooth animations.                   |
+
+## 👥 User Archetypes
+
+### Job Seeker
+- **Primary Goal**: Find and apply to relevant job opportunities quickly and effortlessly
+- **Pain Points**: Overwhelming application processes, difficulty finding matching jobs, lack of feedback
+- **Behavior**: Browse jobs without account initially, prefer one-click applications, value clear descriptions
+- **Success Metrics**: Time to find jobs, application completion rate, response rate, time to interview
+
+### Company/Employer
+- **Primary Goal**: Find qualified candidates efficiently and manage hiring pipeline seamlessly
+- **Pain Points**: Too many unqualified applications, difficulty standing out, complex processes
+- **Behavior**: Post jobs quickly, need clear filtering, value quality over quantity
+- **Success Metrics**: Time to fill positions, application quality, candidate response rates
+
+### Admin
+- **Primary Goal**: Maintain platform quality, resolve disputes, ensure delightful user experience
+- **Pain Points**: Manual moderation, difficulty identifying issues, lack of analytics
+- **Behavior**: Quick access to reports, efficient moderation tools, clear audit trails
+- **Success Metrics**: Response time to issues, platform uptime, user satisfaction
+
+## 🎯 UX Rules & Constraints
+
+### Flow Design
+- Keep flows linear and intuitive (not multi-modal)
+- Embed delightful progression wherever possible (progress bars, completion dots, micro-animations)
+- Use dialog for prompt and alert with smooth transitions
+- Use toaster for info and error with subtle animations
+- Use sheet for any additional info and form derived from page component
+- Multi language support with seamless switching
+
+### Interaction Principles
+- **One-Click Away**: Everything should feel accessible with minimal clicks
+- **No Modal Traps**: Avoid situations where users can't easily navigate away
+- **Progressive Disclosure**: Show information progressively, not all at once
+- **Clear Feedback**: Provide immediate feedback for all user actions
+- **Smooth Transitions**: Use animations to guide user attention and provide context
+
+## 🎨 UI Design System
+
+### Tech Stack
+- **Tailwind CSS** + **shadcn/ui** with custom theme tokens
+- **Framer Motion** for major component entries and micro-interactions
+- **Lucide React** for icons with optional animations
+- **Tiptap Editor** as rich text editor with custom styling
+- **Tanstack Query** for optimized data fetching and state management
+
+### Typography
+- **Font**: `font-sans` (Inter)
+- **Base Size**: `text-sm`
+- **Headers**: Large `text-3xl` with proper spacing
+- **Hierarchy**: Clear visual hierarchy with consistent spacing
+
+### Visual Elements
+- **Whitespace**: Heavy use of whitespace for clean, airy feel
+- **Corners**: Rounded corners throughout the interface
+- **Colors**: Pastel or soft accent colors
+- **Shadows**: Subtle shadows for depth without heaviness
+
+### Component Usage
+
+#### Dialogs
+- Use for **prompts** and **alerts**
+- Implement smooth transitions
+- Keep content focused and actionable
+
+#### Sheets
+- Use for **additional information** and **forms**
+- Perfect for sub-page content
+- Slide in from right/bottom for natural flow
+
+#### Toasters
+- Use for **info** and **error** messages
+- Implement subtle animations
+- Auto-dismiss with user control
+
+#### Progress Indicators
+- **Progress bars** for multi-step processes
+- **Completion dots** for step-by-step flows
+- **Micro-animations** for delightful interactions
+
+## 🚀 Performance & Animation
+
+### Animation Principles
+- **Purposeful**: Every animation serves a purpose
+- **Smooth**: 60fps performance target
+- **Contextual**: Animations provide spatial context
+- **Subtle**: Enhance experience without being distracting
+
+### Performance Guidelines
+- Prefer **SSR** or **statically streamed** content
+- Implement **skeleton loading** states
+- Use **lazy loading** for non-critical components
+- Optimize **bundle size** with proper code splitting
+- Use **Tanstack Query** for intelligent data caching and background updates
+
+### Responsive Design
+- **Mobile-first** approach
+- **Touch-friendly** interactions
+- **Adaptive layouts** for different screen sizes
+- **Consistent experience** across devices
+
+## 🔧 Implementation Guidelines
+
+### Component Structure
+- Use **server components** by default
+- Convert to **client components** only when needed for interactivity
+- Implement **proper loading states** and **error boundaries**
+- Use **suspense boundaries** for better user experience
+
+### Accessibility
+- **Semantic HTML** for screen readers
+- **Keyboard navigation** support
+- **Color contrast** compliance
+- **Focus management** for modals and sheets
+
+### Internationalization
+- **Multi-language** support
+- **Seamless switching** between languages
+- **RTL** language support where needed
+- **Localized** date, number, and currency formats

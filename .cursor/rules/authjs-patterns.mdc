@@ -1,3 +1,7 @@
+---
+alwaysApply: true
+---
+
 # Auth.js (NextAuth.js) Patterns & Usage
 
 > **📖 Reading Order**: Read this file when implementing authentication features
@@ -287,7 +291,292 @@ const handler = NextAuth({
 - [NextAuth.js with Drizzle](https://authjs.dev/reference/adapter/drizzle)
 - [NextAuth.js Middleware](https://next-auth.js.org/configuration/nextjs#middleware)
 - [NextAuth.js Callbacks](https://next-auth.js.org/configuration/callbacks)
-description:
-globs:
-alwaysApply: true
----
+# Auth.js (NextAuth.js) Patterns & Usage
+
+> **📖 Reading Order**: Read this file when implementing authentication features
+> **🎯 Purpose**: Auth.js implementation patterns, hooks, and best practices
+
+## 🔐 Authentication Architecture
+
+### NextAuth.js Configuration
+- **Main Route**: `app/api/auth/[...nextauth]/route.ts`
+- **Session Strategy**: JWT-based sessions
+- **Provider**: Credentials provider for email/password
+- **Adapter**: Drizzle adapter for database integration
+- **Callbacks**: Custom JWT and session callbacks for role management
+
+### Database Schema
+- **Users Table**: Extended with role-based access control
+- **Sessions Table**: Auth.js compatible session storage
+- **Accounts Table**: OAuth provider integration ready
+- **Verification Tokens**: Email verification support
+
+## 🎯 Usage Patterns
+
+### Authentication Hooks
+
+#### useAuth Hook
+```typescript
+import { useAuth } from '@/lib/hooks/use-auth';
+
+const { user, isAuthenticated, isLoading, login, register, logout } = useAuth();
+
+// Login
+const success = await login(email, password, rememberMe);
+
+// Register
+const success = await register({ email, password, name, role });
+
+// Logout
+await logout();
+```
+
+#### Direct NextAuth Hooks
+```typescript
+import { useSession, signIn, signOut } from 'next-auth/react';
+
+const { data: session, status } = useSession();
+
+// Sign in
+await signIn('credentials', { email, password, redirect: false });
+
+// Sign out
+await signOut({ redirect: false });
+```
+
+### Server-Side Authentication
+
+#### Protected Layouts
+```typescript
+import { getServerSession } from 'next-auth';
+import { redirect } from 'next/navigation';
+
+export default async function ProtectedLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const session = await getServerSession();
+
+  if (!session || session.user.role !== 'company') {
+    redirect('/auth/signin');
+  }
+
+  return <div>{children}</div>;
+}
+```
+
+#### API Route Protection
+```typescript
+import { getServerSession } from 'next-auth';
+
+export async function GET() {
+  const session = await getServerSession();
+  
+  if (!session) {
+    return new Response('Unauthorized', { status: 401 });
+  }
+  
+  // Handle authenticated request
+}
+```
+
+### Middleware Protection
+
+#### Route-Level Security
+```typescript
+// middleware.ts
+import { withAuth } from 'next-auth/middleware';
+
+export default withAuth(
+  function middleware(req) {
+    const { pathname } = req.nextUrl;
+    const { token } = req.nextauth;
+
+    // Role-based access control
+    if (pathname.startsWith('/company') && token?.role !== 'company') {
+      return NextResponse.redirect(new URL('/auth/signin', req.url));
+    }
+
+    return NextResponse.next();
+  },
+  {
+    callbacks: {
+      authorized: ({ token }) => !!token,
+    },
+  }
+);
+```
+
+## 🏗️ Component Patterns
+
+### Authentication Components
+
+#### Login Form
+```typescript
+'use client';
+
+import { useAuth } from '@/lib/hooks/use-auth';
+
+export function LoginForm() {
+  const { login } = useAuth();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const success = await login(email, password);
+    
+    if (success) {
+      // Redirect or show success message
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      {/* Form fields */}
+    </form>
+  );
+}
+```
+
+#### Registration Form
+```typescript
+'use client';
+
+import { useAuth } from '@/lib/hooks/use-auth';
+
+export function RegistrationForm() {
+  const { register } = useAuth();
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    name: '',
+    role: 'jobseeker' as 'jobseeker' | 'company'
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const success = await register(formData);
+    
+    if (success) {
+      // Auto-login or redirect
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      {/* Form fields */}
+    </form>
+  );
+}
+```
+
+### Protected Components
+
+#### Role-Based Content
+```typescript
+'use client';
+
+import { useAuth } from '@/lib/hooks/use-auth';
+
+export function CompanyDashboard() {
+  const { user, isAuthenticated } = useAuth();
+
+  if (!isAuthenticated || user?.role !== 'company') {
+    return <div>Access denied</div>;
+  }
+
+  return (
+    <div>
+      <h1>Welcome, {user.name}</h1>
+      {/* Company-specific content */}
+    </div>
+  );
+}
+```
+
+## 🔧 Configuration
+
+### Environment Variables
+```bash
+# .env.local
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your-secret-key-change-in-production
+DATABASE_URL=file:./data.db
+```
+
+### NextAuth Configuration
+```typescript
+const handler = NextAuth({
+  providers: [
+    CredentialsProvider({
+      name: 'credentials',
+      credentials: {
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' },
+      },
+      async authorize(credentials) {
+        // Custom authorization logic
+      },
+    }),
+  ],
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.role = user.role;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (token) {
+        session.user.id = token.sub!;
+        session.user.role = token.role as string;
+      }
+      return session;
+    },
+  },
+  session: {
+    strategy: 'jwt',
+  },
+});
+```
+
+## 🚫 Anti-Patterns to Avoid
+
+### Authentication
+- **Don't** use custom JWT tokens alongside NextAuth
+- **Don't** bypass NextAuth middleware for route protection
+- **Don't** store sensitive data in client-side state
+- **Don't** use localStorage for session data
+
+### Component Patterns
+- **Don't** use client components for server-side authentication checks
+- **Don't** mix authentication patterns within the same component
+- **Don't** hardcode role checks without proper validation
+
+### Security
+- **Don't** expose user roles or permissions in client-side code
+- **Don't** skip input validation in authentication forms
+- **Don't** use weak password requirements
+
+## 🔄 Migration from Custom Auth
+
+### What Changed
+- **Provider**: Custom AuthProvider → NextAuth SessionProvider
+- **Hooks**: Custom useAuth → NextAuth useSession + custom useAuth wrapper
+- **API Routes**: Custom auth endpoints → NextAuth API routes
+- **Middleware**: Custom JWT validation → NextAuth middleware
+
+### What Stayed the Same
+- **User Roles**: jobseeker, company, admin
+- **Password Hashing**: bcrypt for secure storage
+- **Database Schema**: Core user structure maintained
+- **Protected Routes**: Role-based access control preserved
+
+## 📚 Additional Resources
+
+- [NextAuth.js Documentation](https://next-auth.js.org/)
+- [NextAuth.js with Drizzle](https://authjs.dev/reference/adapter/drizzle)
+- [NextAuth.js Middleware](https://next-auth.js.org/configuration/nextjs#middleware)
+- [NextAuth.js Callbacks](https://next-auth.js.org/configuration/callbacks)
